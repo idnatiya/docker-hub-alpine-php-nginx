@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 RUN apk update \
-  && apk add --no-cache nginx php81 php81-fpm \
+  && apk add --no-cache php81 php81-fpm \
     curl \
     php81-soap php81-openssl php81-gmp \
     php81-pdo_odbc php81-json php81-dom \
@@ -11,7 +11,7 @@ RUN apk update \
     php81-pdo_mysql php81-phar php81-session php81-redis \
     php81-tokenizer php81-mbstring php81-fileinfo \
     php81-gettext php81-xmlreader php81-xmlwriter php81-xml \
-    php81-bz2 php81-iconv php81-pdo_dblib php81-curl php81-ctype \
+    php81-bz2 php81-iconv php81-pdo_dblib php81-curl php81-ctype php81-pecl-swoole php81-posix \
     nodejs npm nano sudo \
     supervisor
 
@@ -20,14 +20,8 @@ RUN ln -s /usr/bin/php81 /usr/bin/php
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY configure.sh /configure.sh
 COPY supervisord.conf /etc/supervisord.conf
 
-VOLUME ["/var/lib/nginx/html/"]
-
 EXPOSE 80/tcp
-
-RUN sh /configure.sh
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
